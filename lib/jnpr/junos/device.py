@@ -1236,6 +1236,7 @@ class Device(_Connection):
         self._port = kvargs.get("port", 830)
         self._sock_fd = kvargs.get("sock_fd", None)
         self._auth_handler = kvargs.get("auth_handler", None)
+        self._sock = kvargs.get("sock", None)
         self._gather_facts = kvargs.get("gather_facts", True)
         self._normalize = kvargs.get("normalize", False)
         self._auto_probe = kvargs.get("auto_probe", self.__class__.auto_probe)
@@ -1392,6 +1393,7 @@ class Device(_Connection):
                 host=self._hostname,
                 port=self._port,
                 sock_fd=self._sock_fd,
+                sock=self._sock,
                 username=self._auth_user,
                 password=self._auth_password,
                 auth_handler = self._auth_handler,
