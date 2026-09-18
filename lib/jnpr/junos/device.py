@@ -1256,6 +1256,8 @@ class Device(_Connection):
 
         self._port = kvargs.get("port", 830)
         self._sock_fd = kvargs.get("sock_fd", None)
+        self._sock = kvargs.get("sock", None)
+        self._auth_handler = kvargs.get("auth_handler", None)
         self._gather_facts = kvargs.get("gather_facts", True)
         self._normalize = kvargs.get("normalize", False)
         self._auto_probe = kvargs.get("auto_probe", self.__class__.auto_probe)
@@ -1424,19 +1426,19 @@ class Device(_Connection):
                 hostkey_verify = self._hostkey_verify
 
             # build sock from proxy_command if provided
-            sock = None
-            if self._proxy_command:
+            if self._proxy_command and not self._sock:
                 proxy_cmd = self._proxy_command.replace("%h", self._hostname).replace(
                     "%p", str(self._port)
                 )
-                sock = paramiko.proxy.ProxyCommand(proxy_cmd)
+                self._sock = paramiko.proxy.ProxyCommand(proxy_cmd)
 
             # open connection using ncclient transport
             self._conn = netconf_ssh.connect(
                 host=self._hostname,
                 port=self._port,
                 sock_fd=self._sock_fd,
-                sock=sock,  # support for ProxyCommand parameter
+                sock=self._sock,
+                auth_handler = self._auth_handler,
                 username=self._auth_user,
                 password=self._auth_password,
                 hostkey_verify=hostkey_verify,
